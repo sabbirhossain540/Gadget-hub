@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'category.apps.CategoryConfig'
+    'category.apps.CategoryConfig',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +70,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'gadgethub.wsgi.application'
+
+AUTH_USER_MODEL = 'accounts.Account'
 
 
 # Database
