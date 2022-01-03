@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 # Create your models here.
 
@@ -11,6 +12,9 @@ class Category(models.Model):
     class Meta:
         verbose_name = 'category',
         verbose_name_plural = 'categoris'
+
+    def get_url(self):
+        return reverse('products_by_category', args=[self.slug])
 
 
     def __str__(self):
