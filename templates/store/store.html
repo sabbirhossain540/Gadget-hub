@@ -126,7 +126,9 @@
 			
 		</div>
 </header><!-- sect-heading -->
-
+{% if product_count <= 0 %}
+	<h2>No Product Found. Please Try again later</h2>
+{% else %}
 <div class="row">
     {% for product in page_obj %}
 	<div class="col-md-4">
@@ -157,6 +159,8 @@
     {% endfor %}
 
 </div> <!-- row end.// -->
+
+{% endif %}
 
 
 <nav class="mt-4" aria-label="Page navigation sample">
