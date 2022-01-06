@@ -41,18 +41,47 @@ def add_cart(request, product_id):
     cart.save()
     
 
-    try:
+    if_cart_item_exists = CartItem.objects.filter(product=product, cart=cart).exists()
+    if if_cart_item_exists:
         #return HttpResponse(cart)
-        cart_item = CartItem.objects.get(product=product, cart=cart)
+        cart_item = CartItem.objects.filter(product=product, cart=cart)
+
+
+        ## Work From Here  ( 12:10 )
+
+
+        ex_var_list = []
+        for item in cart_item:
+            return HttpResponse(item.variations)
+            existing_variation = item.variations.all()
+            return HttpResponse(existing_variation)
+            ex_var_list.append(['sss', 'ssss'])
+            return HttpResponse(ex_var_list)
+
+        if product_variation in ex_var_list:
+            return HttpResponse('true')
+        else:
+            return HttpResponse('false')
+        
+        #cart_item = CartItem.objects.get(product=product, cart=cart)
+        if len(product_variation) > 0:
+            cart_item.variations.clear()
+            for item in product_variation:
+                cart_item.variations.add(item)
+
         #return HttpResponse(cart)
         cart_item.quantity += 1
         cart_item.save()
-    except CartItem.DoesNotExist:
+    else:
         cart_item = CartItem.objects.create(
             product = product,
             quantity = 1,
             cart = cart
         )
+        if len(product_variation) > 0:
+            cart_item.variations.clear()
+            for item in product_variation:
+                cart_item.variations.add(item)
 
         cart_item.save()
 
