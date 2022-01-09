@@ -134,6 +134,4 @@ def cart(request, total=0, quantity=0, cart_items=None):
         'grand_total' : grand_total,
     }
 
-    #return HttpResponse(context)
-    
     return render(request, 'store/cart.html', context)
