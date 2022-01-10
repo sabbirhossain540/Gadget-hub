@@ -1,5 +1,6 @@
+from django.contrib import messages
 from django.http.response import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from accounts.models import Account
 from .forms import RegistrationForm
@@ -20,6 +21,8 @@ def register(request):
             user = Account.objects.create_user(first_name= first_name, last_name=last_name, email=email, username=username, password=password)
             user.phone_number = phone_number
             user.save()
+            messages.success(request, 'Registration Successfull')
+            return redirect('register')
     else:
         form = RegistrationForm()
 
