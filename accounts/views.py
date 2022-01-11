@@ -48,8 +48,8 @@ def register(request):
             send_email.send()
 
 
-            messages.success(request, 'Registration Successfull')
-            return redirect('register')
+            #messages.success(request, 'Thank you for registaring with us. We have sent you a varification email to your email address. Please varify it.')
+            return redirect('login?command=varification&email='+email)
     else:
         form = RegistrationForm()
 
@@ -81,3 +81,20 @@ def logout(request):
         auth.logout(request)
         messages.success(request, 'You are successfully logout')
         return redirect('login')
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = Account._default_manager.get(pk=uid)
+    except(TypeError, ValueError, OverflowError,Account.DoesNotExist):
+        user = None
+    
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, 'Congratulations ! User account is activate.')
+        return redirect('login')
+    else:
+        messages.error(request, 'Invalid Activatin link')
+        return redirect('register')

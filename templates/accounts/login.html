@@ -5,6 +5,16 @@
 <!-- ========================= SECTION CONTENT ========================= -->
 <section class="section-conten padding-y" style="min-height:84vh">
 
+  {% if request.GET.command == 'varification' %}
+  <div class="container mx-auto alert alert-info" style="max-width: 380px; margin-top:100px;">
+    Thank you for registaring with us. We have sent you a varification email to your email address [{{ request.GET.email }}]. Please varify it.
+
+    <br><br>
+    Already Varify <a href="{% url 'login' %}">Login</a>
+
+  </div>
+  {% else %}
+
     <!-- ============================ COMPONENT LOGIN   ================================= -->
         <div class="card mx-auto" style="max-width: 380px; margin-top:100px;">
           <div class="card-body">
@@ -33,7 +43,7 @@
          <p class="text-center mt-4">Don't have account? <a href="{% url 'register' %}">Sign up</a></p>
          <br><br>
     <!-- ============================ COMPONENT LOGIN  END.// ================================= -->
-    
+   {% endif %} 
     
     </section>
     <!-- ========================= SECTION CONTENT END// ========================= -->
