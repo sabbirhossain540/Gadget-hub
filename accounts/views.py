@@ -17,6 +17,8 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
 
+import requests
+
 
 # Create your views here.
 
@@ -75,7 +77,7 @@ def login(request):
                 is_cart_item_is_exists = CartItem.objects.filter(cart=cart).exists()
                 if is_cart_item_is_exists:
                     cart_item = CartItem.objects.filter(cart=cart)
-                    
+
                     # Getting the product variations by cart id
                     product_variation = []
                     for item in cart_item:
@@ -112,7 +114,16 @@ def login(request):
 
             auth.login(request, user)
             messages.success(request, 'You are now logged In')
-            return redirect('dashboard')
+            url = request.META.get('HTTP_REFERER')
+            try:
+                query = requests.utils.urlparse(url).query
+                # next=/cart/checkout/
+                params = dict(x.split('=') for x in query.split('&'))
+                if 'next' in params:
+                    nextPage = params['next']
+                    return redirect(nextPage)    
+            except:
+                return redirect('dashboard')
             
         else:
             messages.error(request, 'Invalid login credential')
