@@ -85,7 +85,7 @@
             
         </header>
 
-        <form action="" method="POST">
+        <form action="{% url 'submit_review' single_product.id %}" method="POST">
             {% csrf_token %}
             <h5>Write Your Review</h5>
             <div>
@@ -103,6 +103,7 @@
                     <input type="radio" name="rating" id="rating2" value="1" required><label for="rating2" title="1"></label>
                     <input type="radio" name="rating" id="rating1" value="0.5" required><label for="rating1" title="0.5" class="half"></label>
                 </div>
+                <br>
 
                 Review Title:
                 <input type="text" class="form-control" name="subject">
@@ -110,9 +111,16 @@
                 Review:
                 <textarea name="review" id="review" rows="4" class="form-control"></textarea>
                 <br>
-                <input type="submit" class="btn btn-info btn-lg" value="Submit Review">
+                {% if user.is_authenticated %}
+                    <input type="submit" class="btn btn-info btn-lg" value="Submit Review">
+                {% else %}
+                    <p>You must be logged in to post a review. <a href="{% url 'login' %}">Login</a></p>
+                {% endif %}
+                
 
             </div>
+
+            {% include '__partial/alert.html' %}
 
         </form>
         <br>
