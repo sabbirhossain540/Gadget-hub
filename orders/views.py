@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render
 from carts.models import CartItem
+from store.models import Product
 from .models import Order, OrderProduct, Payment
 from .forms import OrderForm
 import datetime
@@ -105,6 +106,14 @@ def payments(request):
         orderproduct = OrderProduct.objects.get(id=orderproduct.id)
         orderproduct.variations.set(product_variation)
         orderproduct.save()
+
+
+        #Reduce Product Quantity
+        product = Product.objects.get(id=item.product_id)
+        product.stock -= item.quantity
+        product.save()
+
+    CartItem.objects.filter(user=request.user).delete()
 
 
     return render(request, 'orders/payments.html')
