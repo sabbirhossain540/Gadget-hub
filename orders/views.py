@@ -1,3 +1,6 @@
+
+from django.http import HttpResponse, JsonResponse
+from tokenize import Number
 from django.shortcuts import redirect, render
 from carts.models import CartItem
 from store.models import Product
@@ -5,6 +8,8 @@ from .models import Order, OrderProduct, Payment
 from .forms import OrderForm
 import datetime
 import json
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 
 # Create your views here.
 def place_order(request , total = 0, quantity = 0):
@@ -115,8 +120,32 @@ def payments(request):
 
     CartItem.objects.filter(user=request.user).delete()
 
+    mail_subject = "Thank you for your order"
+    message = render_to_string('orders/order_received_email.html', {
+        'user':request.user,
+        'order': order,
+    })
 
-    return render(request, 'orders/payments.html')
+    to_email = request.user.email
+    send_email = EmailMessage(mail_subject, message, to=[to_email])
+    send_email.send()
+
+    data = {
+        'order_number': order.order_number,
+        'transID': payment.payment_id
+    }
+
+    return JsonResponse(data)
+
+
+    #return render(request, 'orders/payments.html')
+
+
+
+
+def order_complete(request):
+    return render(request,'orders/order_complete.html')
+
 
 
 
