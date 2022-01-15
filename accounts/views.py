@@ -1,4 +1,4 @@
-import django
+
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 
@@ -8,6 +8,7 @@ from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from carts.models import Cart, CartItem
 from carts.views import _cart_id
+from orders.models import Order
 
 #EMAIL VARIFICATION
 from django.contrib.sites.shortcuts import get_current_site
@@ -155,7 +156,12 @@ def activate(request, uidb64, token):
 
 @login_required(login_url= 'login')
 def dashboard(request):
-    return render(request, 'accounts/dashboard.html')
+    orders = Order.objects.order_by('-created_at').filter(user_id=request.user.id, is_ordered=True)
+    orders_count = orders.count()
+    context = {
+        'orders_count': orders_count,
+    }
+    return render(request, 'accounts/dashboard.html', context)
 
 def forgotPassword(request):
     if request.method == 'POST':
@@ -218,3 +224,11 @@ def resetPassword(request):
             return redirect('resetPassword')
     else:
         return render(request, 'accounts/resetPassword.html')
+
+def my_orders(request):
+    #return HttpResponse(request.user.id)
+    order_item = Order.objects.filter(user=request.user.id, is_ordered=True).order_by('-created_at')
+    context ={
+        'order_items': order_item
+    }
+    return render(request, 'accounts/my_orders.html', context)
