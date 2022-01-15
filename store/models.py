@@ -1,11 +1,13 @@
 from audioop import avg
+from itertools import count
 from tkinter.messagebox import NO
+from typing import Counter
 from django.db import models
 from django.db.models.deletion import CASCADE
 from category.models import Category
 from django.urls import reverse
 from accounts.models import Account
-from django.db.models import Avg
+from django.db.models import Avg, Count
 
 # Create your models here.
 
@@ -33,6 +35,13 @@ class Product(models.Model):
         if reviews['average'] is not None:
             avg = float(reviews['average'])
         return avg
+
+    def countReview(self):
+        reviews = ReviewRating.objects.filter(product=self, status=True).aggregate(count=Count('id'))
+        count = 0
+        if reviews['count'] is not None:
+            count = reviews['count']
+        return count
 
 class VariationManager(models.Manager):
     def colors(self):
