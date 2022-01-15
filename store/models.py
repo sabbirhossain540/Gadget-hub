@@ -1,5 +1,6 @@
 from audioop import avg
 from itertools import count
+from tabnanny import verbose
 from tkinter.messagebox import NO
 from typing import Counter
 from django.db import models
@@ -82,4 +83,17 @@ class ReviewRating(models.Model):
 
     def __str__(self):
         return self.subject
+
+class ProductGallery(models.Model):
+    product = models.ForeignKey(Product, default=None, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='store/products', max_length=255)
+
+    def __str__(self):
+        return self.product.product_name
+
+    # class Meta:
+    #     verbose_name = 'productgallery'
+    #     verbose_name_plural = 'productgallerys'
+
+
 
