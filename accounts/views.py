@@ -1,4 +1,5 @@
 
+import re
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 
@@ -225,6 +226,7 @@ def resetPassword(request):
     else:
         return render(request, 'accounts/resetPassword.html')
 
+@login_required(login_url= 'login')
 def my_orders(request):
     #return HttpResponse(request.user.id)
     order_item = Order.objects.filter(user=request.user.id, is_ordered=True).order_by('-created_at')
@@ -233,6 +235,7 @@ def my_orders(request):
     }
     return render(request, 'accounts/my_orders.html', context)
 
+@login_required(login_url= 'login')
 def edit_profile(request):
     userprofile = get_object_or_404(UserProfile, user=request.user)
     if request.method == 'POST':
@@ -254,3 +257,28 @@ def edit_profile(request):
     }
 
     return render(request, 'accounts/edit_profile.html', context)
+
+@login_required(login_url= 'login')
+def change_password(request):
+    if request.method == 'POST':
+        current_password = request.POST['current_password']
+        new_password = request.POST['new_password']
+        confirm_password = request.POST['confirm_password']
+
+        user = Account.objects.get(username__exact = request.user.username)
+        if new_password == confirm_password:
+            success = user.check_password(current_password)
+            if success:
+                user.set_password(new_password)
+                user.save()
+                #auth.logout(request)
+                messages.success(request, 'Password updated successfully')
+                return redirect('change_password')
+            else:
+                messages.error(request, 'Please enter valid current password')
+                return redirect('change_password')
+        else:
+            messages.error(request, 'Password does not match')
+            return redirect('change_password')
+
+    return render(request, 'accounts/change_password.html')
