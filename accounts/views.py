@@ -232,3 +232,6 @@ def my_orders(request):
         'order_items': order_item
     }
     return render(request, 'accounts/my_orders.html', context)
+
+def edit_profile(request):
+    return render(request, 'accounts/edit_profile.html')
