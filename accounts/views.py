@@ -9,7 +9,7 @@ from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from carts.models import Cart, CartItem
 from carts.views import _cart_id
-from orders.models import Order
+from orders.models import Order, OrderProduct
 
 #EMAIL VARIFICATION
 from django.contrib.sites.shortcuts import get_current_site
@@ -159,8 +159,11 @@ def activate(request, uidb64, token):
 def dashboard(request):
     orders = Order.objects.order_by('-created_at').filter(user_id=request.user.id, is_ordered=True)
     orders_count = orders.count()
+    userprofile = UserProfile.objects.get(user_id = request.user.id)
+
     context = {
         'orders_count': orders_count,
+        'userprofile' : userprofile,
     }
     return render(request, 'accounts/dashboard.html', context)
 
@@ -282,3 +285,18 @@ def change_password(request):
             return redirect('change_password')
 
     return render(request, 'accounts/change_password.html')
+
+@login_required(login_url= 'login')
+def order_details(request, order_id):
+    order_detail = OrderProduct.objects.filter(order__order_number=order_id)
+    order = Order.objects.get(order_number=order_id)
+    subtotal = 0
+    for item in order_detail:
+        subtotal+= item.product_price * item.quantity
+
+    compact = {
+        'order_detail' : order_detail,
+        'order' : order,
+        'subtotal':subtotal,
+    }
+    return render(request, 'accounts/order_detail.html', compact)
